@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "ucp/order";
+
+
+service orderManagement {
+  rpc getProduct(productId) returns (product);
+  rpc addProduct(product) returns (productId);
+}
+
+message productId {
+  string value = 1;
+}
+
+message product {
+  string id = 1;
+  string name = 2;
+  string desc = 3;
+  float price = 4;
+}
