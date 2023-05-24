@@ -3,12 +3,11 @@
 ```protobuf
 syntax = "proto3";
 
-package order;
+package productinfo
 
-option go_package = "ucp/order";
+option go_package = "ucp/product";
 
-
-service orderManagement {
+service productInfo {
   rpc getProduct(productId) returns (product);
   rpc addProduct(product) returns (productId);
 }
@@ -27,16 +26,16 @@ message product {
 
 ## 第二步：使用protoc命令生成go代码
 ```bash
-cd unary_communication_pattern/pb/ordermanagement
-protoc --go_out=.\ --go-grpc_out=.\ .\order.proto
+cd unary/pb/productinfo
+protoc --go_out=.\ --go-grpc_out=.\ .\product_info.proto
 ```
 
 ## 第三步：生成服务端和客户端可执行程序
-```
-$ cd server # 进入server文件夹
-$ go build -v -o ../bin/server.exe #
-$ cd client # 进入client文件夹
-$ go build -v -o ../bin/client.ext #生成客户端的可执行文件
+```bash
+cd server # 进入server文件夹
+go build -v -o ../bin/server.exe #生成服务端可执行文件
+cd client # 进入client文件夹
+go build -v -o ../bin/client.ext #生成客户端的可执行文件
 ```
 
 先运行服务端可执行文件，后执行客户端可执行文件：
