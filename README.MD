@@ -26,7 +26,7 @@ message product {
 
 ## 第二步：使用protoc命令生成go代码
 ```bash
-cd unary/pb/productinfo
+cd unary/pb
 protoc --go_out=.\ --go-grpc_out=.\ .\product_info.proto
 ```
 
@@ -59,3 +59,50 @@ cd ../bin
 2023/05/23 23:55:53 Product : id:"193616468358980182203562924772" name:"Product 1" desc:"Product 1 desc" price:100
 2023/05/23 23:55:58 ProductId : value:"232120844655576178144389321985"
 2023/05/23 23:55:58 Product : id:"232120844655576178144389321985" name:"Product 1" desc:"Product 1 desc" price:100
+
+# grpc网关服务
+gRPC 网关插件能够让protocol buffers 编译器读取gRPC 服务定义，并生成反向代理服务器端，该服务器端能够将RESTful JSON API 翻译为gRPC。
+
+![](./.img/545c4752d638c76cc90e0ab347169403.png)
+
+改写之前的pb文件，使其增加网关功能：
+```protobuf
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+package productInfo;
+
+option go_package = "genproto/product_info";
+
+service productInfo {
+  rpc getProduct(productId) returns (product) {
+    option (google.api.http) = {
+      get: "/v1/products/{id}"
+    };
+  }
+  rpc addProduct(product) returns (productId) {
+    option (google.api.http) = {
+      post: "/v1/products"
+      body: "*"
+    };
+  }
+}
+
+message productId {
+  string value = 1;
+}
+
+message product {
+  string id = 1;
+  string name = 2;
+  string desc = 3;
+  float price = 4;
+}
+```
+在生成对应的服务端和客户端代码之前，需要先安装一些依赖，在项目根目录下执行以下命令安装依赖：
+```bash
+$ go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway
+$ go get -u github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger
+$ go get -u google.golang.org/protobuf
+```
